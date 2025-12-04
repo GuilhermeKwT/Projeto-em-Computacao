@@ -5,6 +5,7 @@ import {
 	CreateBucketCommand,
 	HeadObjectCommand,
 	DeleteObjectCommand,
+	PutBucketPolicyCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
@@ -56,6 +57,38 @@ export const ensureBuckets = async () => {
 		await s3.send(new HeadBucketCommand({ Bucket: imagesBucket }));
 	} catch {
 		await s3.send(new CreateBucketCommand({ Bucket: imagesBucket, ACL: "public-read" }));
+
+		try {
+			await s3.send(
+				new PutBucketPolicyCommand({
+					Bucket: imagesBucket,
+					Policy: JSON.stringify({
+						Version: "2012-10-17",
+						Statement: [
+							{
+								Sid: "PublicRead",
+								Effect: "Allow",
+								Principal: "*",
+								Action: "s3:ListBucket",
+								Resource: `arn:aws:s3:::${imagesBucket}`,
+							},
+							{
+								Sid: "PublicReadGetObject",
+								Effect: "Allow",
+								Principal: "*",
+								Action: "s3:GetObject",
+								Resource: `arn:aws:s3:::${imagesBucket}/*`,
+							},
+						],
+					}),
+				}),
+			);
+		} catch (error) {
+			console.error(
+				"Failed to set public read policy on images bucket, may need to set it manually:",
+				error,
+			);
+		}
 	}
 };
 

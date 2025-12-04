@@ -11,7 +11,7 @@ export const auth = (optional: boolean = false) => {
 					return next();
 				}
 
-				return res.status(401).json({ code: 401, message: "Missing Authorization header" });
+				return res.status(401).json({ code: 401, msg: "Missing Authorization header" });
 			}
 
 			if (!authHeader.startsWith("Bearer ")) {
@@ -28,7 +28,7 @@ export const auth = (optional: boolean = false) => {
 					return next();
 				}
 
-				return res.status(401).json({ code: 401, message: "Missing token" });
+				return res.status(401).json({ code: 401, msg: "Missing token" });
 			}
 
 			const user = decodeToken(token);
@@ -39,7 +39,7 @@ export const auth = (optional: boolean = false) => {
 			if (optional) {
 				return next();
 			}
-			return res.status(401).json({ code: 401, message: "Invalid or expired token" });
+			return res.status(401).json({ code: 401, msg: "Invalid or expired token" });
 		}
 	};
 };

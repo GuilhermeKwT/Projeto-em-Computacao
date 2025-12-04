@@ -1,8 +1,6 @@
 import db from "@db/index";
 import { videoComments } from "@db/schema/videoComments";
-import { videos } from "@db/schema/videos";
-import { users } from "@db/schema/users";
-import { eq, and, desc, asc } from "drizzle-orm";
+import { eq, desc, asc } from "drizzle-orm";
 import AppError from "src/lib/AppError";
 import { UserJWT } from "src/types/express";
 

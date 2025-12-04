@@ -64,7 +64,10 @@
 
         <div class="video-description">
           <div class="author-info" (click)="navigateToChannel(video.userId)" style="cursor: pointer;">
-            <mat-icon class="author-avatar">account_circle</mat-icon>
+            <img *ngIf="channelPhotoUrl" [src]="channelPhotoUrl" alt="Foto do canal" class="author-avatar" />
+            <div *ngIf="!channelPhotoUrl" class="author-avatar placeholder">
+              <mat-icon>account_circle</mat-icon>
+            </div>
             <div>
               <h3 class="author-name">{{ video.owner?.name ?? 'Usuário' }}</h3>
             </div>
@@ -105,7 +108,10 @@
 
       <div class="comments-list">
         <div class="comment" *ngFor="let comment of comments">
-          <mat-icon class="comment-avatar">account_circle</mat-icon>
+          <img *ngIf="getCommentAuthorPhoto(comment)" [src]="getCommentAuthorPhoto(comment)" alt="Foto do usuário" class="comment-avatar" />
+          <div *ngIf="!getCommentAuthorPhoto(comment)" class="comment-avatar placeholder">
+            <mat-icon>account_circle</mat-icon>
+          </div>
           <div class="comment-content">
             <div class="comment-header">
               <span class="comment-author">{{ comment.user?.name ?? 'Usuário' }}</span>

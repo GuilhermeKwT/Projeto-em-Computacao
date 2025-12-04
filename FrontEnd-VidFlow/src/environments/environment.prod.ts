@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: '/api'
+  apiUrl: '/api',
+  imageBaseUrl: 'https://rgw.ovh:9000/images/'
 };

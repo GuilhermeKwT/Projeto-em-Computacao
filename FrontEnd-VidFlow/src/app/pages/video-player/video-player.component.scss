@@ -94,10 +94,24 @@
 }
 
 .author-avatar {
-  font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #757575;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #eee;
+
+  &.placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: #757575;
+    }
+  }
 }
 
 .author-name {
@@ -149,11 +163,25 @@
   }
   
   .comment-avatar {
-    font-size: 40px;
     width: 40px;
     height: 40px;
-    color: #757575;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #eee;
     flex-shrink: 0;
+
+    &.placeholder {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: #757575;
+      }
+    }
   }
   
   .comment-content {

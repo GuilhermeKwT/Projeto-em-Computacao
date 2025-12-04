@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { VideoWithOwner } from '../../models/video.model';
 import { VideoService } from '../../services/video.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-video-card',
@@ -139,7 +140,7 @@ export class VideoCardComponent implements OnInit {
     if (photoPath.startsWith('http')) {
       return photoPath;
     }
-    return `https://rgw.ovh:9000/images/${photoPath}`;
+    return `${environment.imageBaseUrl}${photoPath}`;
   }
 
   get videoDate(): string | Date {

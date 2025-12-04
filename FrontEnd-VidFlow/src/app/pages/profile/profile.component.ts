@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -22,9 +23,9 @@ export class ProfileComponent implements OnInit {
   savingField: Record<string, boolean> = {};
   get displayedPhotoUrl(): string {
     const raw = this.photoPreviewUrl || this.user?.photoUrl || '';
-    if (!raw) return 'assets/default-avatar.png';
+    if (!raw) return '';
     if (raw.startsWith('http')) return raw;
-    return `https://rgw.ovh:9000/images/${raw}`;
+    return `${environment.imageBaseUrl}${raw}`;
   }
 
   constructor(

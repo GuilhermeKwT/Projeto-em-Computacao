@@ -5,10 +5,13 @@
     </div>
 
     <div class="profile-content" *ngIf="!isLoading && user">
-      <div class="profile-card">
+        <div class="profile-card">
         <div class="profile-header">
           <div class="avatar-wrapper" (click)="fileInput.click()" title="Alterar foto">
-            <img [src]="displayedPhotoUrl" alt="Avatar"/>
+            <img *ngIf="displayedPhotoUrl" [src]="displayedPhotoUrl" alt="Avatar" class="author-avatar" />
+            <div *ngIf="!displayedPhotoUrl" class="author-avatar placeholder">
+              <mat-icon>account_circle</mat-icon>
+            </div>
             <div class="avatar-edit"><mat-icon>photo_camera</mat-icon></div>
             <input #fileInput type="file" accept="image/*" (change)="onPhotoSelected($event)" hidden />
           </div>

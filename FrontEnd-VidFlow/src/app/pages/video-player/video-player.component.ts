@@ -7,6 +7,7 @@ import { LikeService } from '../../services/like.service';
 import { AuthService } from '../../services/auth.service';
 import { VideoWithOwner } from '../../models/video.model';
 import { CommentWithUser } from '../../models/comment.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-video-player',
@@ -27,6 +28,30 @@ export class VideoPlayerComponent implements OnInit {
   videoUrl = '';
   editingCommentId: string | null = null;
   editCommentText = '';
+
+  get channelPhotoUrl(): string | null {
+    const anyVideo = this.video as any;
+    const photoPath = this.video?.owner?.photoUrl || anyVideo?.uploaderPhotoUrl || null;
+    if (!photoPath || typeof photoPath !== 'string' || photoPath.trim().length === 0) {
+      return null;
+    }
+    if (photoPath.startsWith('http')) {
+      return photoPath;
+    }
+    return `${environment.imageBaseUrl}${photoPath}`;
+  }
+
+  getCommentAuthorPhoto(comment: CommentWithUser): string | null {
+    const anyComment: any = comment;
+    const photoPath = comment.user?.photoUrl || anyComment.userPhotoUrl || null;
+    if (!photoPath || typeof photoPath !== 'string' || photoPath.trim().length === 0) {
+      return null;
+    }
+    if (photoPath.startsWith('http')) {
+      return photoPath;
+    }
+    return `${environment.imageBaseUrl}${photoPath}`;
+  }
 
   constructor(
     private route: ActivatedRoute,

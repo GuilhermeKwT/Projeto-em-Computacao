@@ -38,11 +38,28 @@
     cursor: pointer;
     border: 2px solid #e0e0e0;
 
-    img {
+    img,
+    .author-avatar {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      border-radius: 50%;
+    }
+
+    .author-avatar.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #eee;
+
+      mat-icon {
+        font-size: 56px;
+        width: 56px;
+        height: 56px;
+        line-height: 56px;
+        color: #9e9e9e;
+      }
     }
 
     .avatar-edit {

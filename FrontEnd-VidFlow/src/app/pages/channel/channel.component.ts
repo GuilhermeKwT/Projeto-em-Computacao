@@ -65,7 +65,9 @@ export class ChannelComponent implements OnInit {
           this.channelName = first.uploaderName || first.owner?.name || 'Nome do Canal';
           const photo = first.uploaderPhotoUrl || first.owner?.photoUrl || null;
           const hasPhoto = photo && typeof photo === 'string' && photo.trim().length > 0;
-          this.channelPhotoUrl = hasPhoto ? (photo.startsWith('http') ? photo : `https://rgw.ovh:9000/images/${photo}`) : null;
+          this.channelPhotoUrl = hasPhoto
+            ? (photo.startsWith('http') ? photo : `${environment.imageBaseUrl}${photo}`)
+            : null;
         }
         this.isLoading = false;
       },

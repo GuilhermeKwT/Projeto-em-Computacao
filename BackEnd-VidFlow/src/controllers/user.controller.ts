@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as userService from "../services/user.services";
 import { SignInUser } from "src/schemas/userSchemas";
+import AppError from "src/lib/AppError";
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -13,7 +14,10 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
 export const getMe = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = await userService.getUser(req.user!.id);
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const user = await userService.getUser(req.user.id);
 		return res.json(user);
 	} catch (err) {
 		next(err);
@@ -22,7 +26,10 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
 
 export const updateMe = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = await userService.updateUser(req.user!.id, req.body);
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const user = await userService.updateUser(req.user.id, req.body);
 		return res.json(user);
 	} catch (err) {
 		next(err);
@@ -41,7 +48,10 @@ export const signIn = async (req: Request, res: Response, next: NextFunction) =>
 
 export const removePhoto = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const result = await userService.removePhoto(userId);
 		return res.json(result);
 	} catch (err) {
@@ -51,7 +61,10 @@ export const removePhoto = async (req: Request, res: Response, next: NextFunctio
 
 export const uploadPhotoDirect = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const file = (req as any).file as Express.Multer.File | undefined;
 		if (!file) return res.status(400).json({ message: "No file uploaded" });
 		const updated = await userService.uploadPhotoDirect(userId, {

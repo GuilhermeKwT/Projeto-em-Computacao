@@ -143,8 +143,6 @@ export const getVideoStreamUrl = async (id: string, requester?: UserJWT) => {
 	return { url: signedUrl };
 };
 
-export const initiateVideoUpload = async (userId: string, data: InitiateVideo) => {};
-
 export const createVideoFromUpload = async (
 	userId: string,
 	key: string,

@@ -1,9 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import * as commentService from "../services/comment.services";
+import AppError from "src/lib/AppError";
 
 export const createComment = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { videoId } = req.params;
 		const { text } = req.body;
 
@@ -44,7 +48,10 @@ export const getComment = async (req: Request, res: Response, next: NextFunction
 
 export const updateComment = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { commentId } = req.params;
 		const { text } = req.body;
 
@@ -57,7 +64,10 @@ export const updateComment = async (req: Request, res: Response, next: NextFunct
 
 export const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const user = req.user!;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const user = req.user;
 		const { commentId } = req.params;
 
 		const result = await commentService.deleteComment(commentId, user);

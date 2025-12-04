@@ -12,7 +12,6 @@ import { MAX_VIDEO_UPLOAD_SIZE, MIN_VIDEO_UPLOAD_INTERVAL } from "src/lib/consta
 
 export const searchVideos = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const requesterId = req.user?.id;
 		const filters = req.query as unknown as SearchVideos;
 		const result = await videoService.searchVideos(filters);
 		return res.json(result);
@@ -23,7 +22,10 @@ export const searchVideos = async (req: Request, res: Response, next: NextFuncti
 
 export const initiateUpload = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { filename, contentType, title, description, visibility } = req.body as any;
 
 		const maxPending = 5;
@@ -69,7 +71,10 @@ export const initiateUpload = async (req: Request, res: Response, next: NextFunc
 
 export const completeUpload = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { key } = req.body as any;
 
 		if (!key) throw new AppError("Missing key", 400);
@@ -103,7 +108,11 @@ export const getVideo = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateVideo = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const video = await videoService.updateVideo(req.params.id, req.user!, req.body);
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+
+		const video = await videoService.updateVideo(req.params.id, req.user, req.body);
 
 		return res.json(video);
 	} catch (err) {
@@ -113,7 +122,11 @@ export const updateVideo = async (req: Request, res: Response, next: NextFunctio
 
 export const deleteVideo = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const result = await videoService.deleteVideo(req.params.id, req.user!);
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+
+		const result = await videoService.deleteVideo(req.params.id, req.user);
 		return res.json(result);
 	} catch (err) {
 		next(err);
@@ -147,10 +160,15 @@ export const getUserVideos = async (req: Request, res: Response, next: NextFunct
 
 export const getUserPendingJobs = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
+
 		const items = await db.query.pendingUploads.findMany({
 			where: (t, { eq }) => eq(t.userId, userId),
 		});
+
 		return res.json(items);
 	} catch (err) {
 		next(err);

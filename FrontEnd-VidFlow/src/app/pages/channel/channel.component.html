@@ -1,0 +1,29 @@
+<div class="channel-container">
+  <div class="container">
+
+    <div class="channel-header">
+      <div class="avatar">
+        <img *ngIf="channelPhotoUrl" [src]="channelPhotoUrl" alt="Foto do canal" />
+        <div *ngIf="!channelPhotoUrl" class="placeholder">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+      </div>
+      <div class="channel-name">{{ channelName }}</div>
+    </div>
+
+    <h3 class="section-title">Vídeos</h3>
+
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div class="videos-grid" *ngIf="!isLoading && (videos?.length ?? 0) > 0">
+      <app-video-card *ngFor="let v of videos" [video]="v"></app-video-card>
+    </div>
+
+    <div class="no-results" *ngIf="!isLoading && (videos?.length ?? 0) === 0">
+      <mat-icon>video_library</mat-icon>
+      <h3>Nenhum vídeo encontrado</h3>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,156 @@
+<div class="video-player-container">
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="video-content" *ngIf="!isLoading && video">
+    <div class="video-section">
+      <div class="video-player">
+        <video 
+          *ngIf="videoUrl"
+          [src]="videoUrl" 
+          controls 
+          autoplay
+          class="video-element">
+        </video>
+      </div>
+
+      <div class="video-info-section">
+        <h1 class="video-title">{{ video.title }}</h1>
+
+        <div class="video-actions">
+          <div class="video-stats">
+            <span>{{ formatDate(video.date) }}</span>
+            <span class="separator" *ngIf="video.videoLength">•</span>
+            <span *ngIf="video.videoLength">{{ formatDuration(video.videoLength) }}</span>
+          </div>
+
+          <div class="action-buttons">
+            <button 
+              mat-button 
+              (click)="toggleLike()"
+              [class.liked]="userLikeStatus === 'like'">
+              <mat-icon>{{ userLikeStatus === 'like' ? 'thumb_up' : 'thumb_up_outline' }}</mat-icon>
+              {{ likesCount }}
+            </button>
+
+            <button 
+              mat-button 
+              (click)="toggleDislike()"
+              [class.disliked]="userLikeStatus === 'dislike'">
+              <mat-icon>{{ userLikeStatus === 'dislike' ? 'thumb_down' : 'thumb_down_outline' }}</mat-icon>
+              {{ dislikesCount }}
+            </button>
+
+            <button 
+              mat-button 
+              *ngIf="canEdit"
+              (click)="editVideo()">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+
+            <button 
+              mat-button 
+              *ngIf="canDelete"
+              (click)="deleteVideo()">
+              <mat-icon>delete</mat-icon>
+              Excluir
+            </button>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="video-description">
+          <div class="author-info" (click)="navigateToChannel(video.userId)" style="cursor: pointer;">
+            <mat-icon class="author-avatar">account_circle</mat-icon>
+            <div>
+              <h3 class="author-name">{{ video.owner?.name ?? 'Usuário' }}</h3>
+            </div>
+          </div>
+
+          <p class="description-text" *ngIf="video.description">
+            {{ video.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="comments-section">
+      <h2 class="comments-title">{{ (comments?.length ?? 0) }} comentários</h2>
+
+      <div class="comment-form">
+        <form *ngIf="commentForm" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adicionar um comentário</mat-label>
+            <textarea 
+              matInput 
+              formControlName="text"
+              rows="3"
+              placeholder="Digite seu comentário..."></textarea>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit"
+              [disabled]="commentForm.invalid || isSubmittingComment">
+              Comentar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="comments-list">
+        <div class="comment" *ngFor="let comment of comments">
+          <mat-icon class="comment-avatar">account_circle</mat-icon>
+          <div class="comment-content">
+            <div class="comment-header">
+              <span class="comment-author">{{ comment.user?.name ?? 'Usuário' }}</span>
+              <span class="comment-date">{{ formatDate(comment.date) }}</span>
+              <div class="comment-actions" *ngIf="canDeleteComment(comment)">
+                <button 
+                  mat-icon-button 
+                  *ngIf="editingCommentId !== comment.id && canEditComment(comment)"
+                  (click)="startEditComment(comment)"
+                  class="edit-comment-btn"
+                  matTooltip="Editar comentário">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  (click)="deleteComment(comment.id)"
+                  class="delete-comment-btn"
+                  matTooltip="Excluir comentário">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            
+            <p class="comment-text" *ngIf="editingCommentId !== comment.id">{{ comment.text }}</p>
+            
+            <div class="comment-edit" *ngIf="editingCommentId === comment.id">
+              <mat-form-field appearance="outline" class="full-width">
+                <textarea 
+                  matInput 
+                  [(ngModel)]="editCommentText"
+                  rows="3"
+                  placeholder="Editar comentário..."></textarea>
+              </mat-form-field>
+              <div class="edit-actions">
+                <button mat-button (click)="cancelEditComment()">Cancelar</button>
+                <button mat-raised-button color="primary" (click)="saveEditComment(comment.id)" [disabled]="!editCommentText.trim()">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-comments" *ngIf="(comments?.length ?? 0) === 0">
+          <p>Seja o primeiro a comentar!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

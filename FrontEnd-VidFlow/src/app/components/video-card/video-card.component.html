@@ -1,0 +1,35 @@
+<div class="video-card" (click)="navigateToVideo()">
+  <div class="video-thumbnail">
+    <div *ngIf="isLoadingThumbnail" class="thumbnail-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    <img 
+      *ngIf="!isLoadingThumbnail && thumbnailUrl"
+      [src]="thumbnailUrl" 
+      [alt]="video.title"
+      class="thumbnail-image">
+    <div *ngIf="!isLoadingThumbnail && !thumbnailUrl" class="thumbnail-placeholder">
+      <mat-icon>videocam</mat-icon>
+    </div>
+    <div class="duration-badge" *ngIf="duration">
+      {{ formatDuration(duration) }}
+    </div>
+  </div>
+  
+  <div class="video-info">
+    <h3 class="video-title">{{ video.title }}</h3>
+
+    <div class="video-metadata">
+      <div class="author-row" (click)="$event.stopPropagation(); navigateToChannel(video.userId)">
+        <img *ngIf="uploaderPhotoUrl" [src]="uploaderPhotoUrl" alt="Foto do canal" class="author-avatar" />
+        <div *ngIf="!uploaderPhotoUrl" class="author-avatar placeholder">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <span class="video-author">{{ uploaderName }}</span>
+      </div>
+      <div class="video-stats">
+        <span>{{ formatDate(videoDate) }}</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <mat-icon class="logo-icon">video_library</mat-icon>
+      <h1>Criar Conta</h1>
+      <p>Junte-se à nossa comunidade de criadores</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input 
+          matInput 
+          type="text" 
+          formControlName="name" 
+          placeholder="Digite seu nome">
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('name')?.invalid">
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input 
+          matInput 
+          type="email" 
+          formControlName="email" 
+          placeholder="seu@email.com">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="registerForm.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input 
+          matInput 
+          [type]="hidePassword ? 'password' : 'text'" 
+          formControlName="password"
+          placeholder="Digite sua senha">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.invalid">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="error-message" *ngIf="errorMessage">
+        <mat-icon>error</mat-icon>
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        class="full-width register-button"
+        [disabled]="registerForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Criar Conta</span>
+        <mat-spinner diameter="24" *ngIf="isLoading"></mat-spinner>
+      </button>
+    </form>
+
+    <div class="login-link">
+      <p>Já tem uma conta? <a routerLink="/login">Fazer login</a></p>
+    </div>
+  </div>
+</div>

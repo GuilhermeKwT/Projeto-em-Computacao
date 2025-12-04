@@ -1,0 +1,105 @@
+<div class="upload-container">
+  <div class="container">
+    <div class="upload-card">
+      <div class="upload-header">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <h1>Fazer Upload de Vídeo</h1>
+        <p>Compartilhe seu conteúdo com a comunidade</p>
+      </div>
+
+      <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+        <div class="file-upload-section">
+          <div 
+            class="file-drop-zone"
+            [class.has-file]="selectedFile">
+            <input 
+              type="file" 
+              id="fileInput"
+              accept="video/*"
+              (change)="onFileSelected($event)"
+              style="display: none">
+            
+            <label for="fileInput" class="file-label">
+              <ng-container *ngIf="!selectedFile">
+                <mat-icon>video_call</mat-icon>
+                <h3>Clique para selecionar um vídeo</h3>
+                <p>Formatos suportados: MP4, AVI, MOV, etc.</p>
+                <p>Tamanho máximo: 500MB</p>
+              </ng-container>
+
+              <ng-container *ngIf="selectedFile">
+                <mat-icon>check_circle</mat-icon>
+                <h3>{{ selectedFile.name }}</h3>
+                <p>{{ formatBytes(selectedFile.size) }}</p>
+              </ng-container>
+            </label>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Título do vídeo</mat-label>
+          <input 
+            matInput 
+            formControlName="title" 
+            placeholder="Digite o título do seu vídeo">
+          <mat-error *ngIf="uploadForm.get('title')?.invalid">
+            {{ getErrorMessage('title') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descrição</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description"
+            rows="4"
+            placeholder="Descreva seu vídeo..."></textarea>
+          <mat-error *ngIf="uploadForm.get('description')?.invalid">
+            {{ getErrorMessage('description') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Visibilidade</mat-label>
+          <select matNativeControl formControlName="visibility">
+            <option value="public">Público</option>
+            <option value="hidden">Privado</option>
+            <option value="link-only">Não listado</option>
+          </select>
+        </mat-form-field>
+
+        <div class="error-message" *ngIf="errorMessage">
+          <mat-icon>error</mat-icon>
+          {{ errorMessage }}
+        </div>
+
+        <div class="upload-progress" *ngIf="isUploading">
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="uploadProgress">
+          </mat-progress-bar>
+          <p>Fazendo upload... {{ uploadProgress }}%</p>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            mat-button 
+            type="button"
+            routerLink="/"
+            [disabled]="isUploading">
+            Cancelar
+          </button>
+          
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="uploadForm.invalid || isUploading || uploadCompleted">
+            <mat-icon>publish</mat-icon>
+            Publicar Vídeo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

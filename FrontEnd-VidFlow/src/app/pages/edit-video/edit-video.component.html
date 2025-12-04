@@ -1,0 +1,102 @@
+<div class="edit-video-container">
+  <div class="container">
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div class="edit-content" *ngIf="!isLoading && video">
+      <h1 class="page-title">Editar Vídeo</h1>
+
+      <form [formGroup]="editForm" (ngSubmit)="saveChanges()">
+        <mat-card class="edit-card">
+          <mat-card-header>
+            <mat-card-title>Informações do Vídeo</mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Título</mat-label>
+              <input 
+                matInput 
+                formControlName="title"
+                placeholder="Digite o título do vídeo">
+              <mat-error *ngIf="editForm.get('title')?.hasError('required')">
+                Título é obrigatório
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descrição</mat-label>
+              <textarea 
+                matInput 
+                formControlName="description"
+                rows="6"
+                placeholder="Descreva seu vídeo"></textarea>
+              <mat-error *ngIf="editForm.get('description')?.hasError('required')">
+                Descrição é obrigatória
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Visibilidade</mat-label>
+              <mat-select formControlName="visibility">
+                <mat-option 
+                  *ngFor="let option of visibilityOptions" 
+                  [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="video-info">
+              <p><strong>ID do vídeo:</strong> {{ video.id }}</p>
+              <p><strong>Data de upload:</strong> {{ video.date | date:'dd/MM/yyyy' }}</p>
+              <p *ngIf="video.videoLength"><strong>Duração:</strong> {{ video.videoLength }} segundos</p>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="card-actions">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit"
+              [disabled]="editForm.invalid || isSaving">
+              <mat-icon>save</mat-icon>
+              {{ isSaving ? 'Salvando...' : 'Salvar Alterações' }}
+            </button>
+
+            <button 
+              mat-button 
+              type="button"
+              (click)="cancel()"
+              [disabled]="isSaving || isDeleting">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </form>
+
+      <mat-card class="danger-zone">
+        <mat-card-header>
+          <mat-card-title>Zona de Perigo</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p>Esta ação é permanente e não pode ser desfeita.</p>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button 
+            mat-raised-button 
+            color="warn"
+            (click)="deleteVideo()"
+            [disabled]="isDeleting || isSaving">
+            <mat-icon>delete_forever</mat-icon>
+            {{ isDeleting ? 'Excluindo...' : 'Excluir Vídeo' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

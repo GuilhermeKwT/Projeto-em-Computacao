@@ -1,0 +1,88 @@
+<div class="home-container">
+  <div class="container">
+    <div class="header-section" *ngIf="searchQuery">
+      <h2 class="search-title">
+        Resultados para "{{ searchQuery }}"
+      </h2>
+      <button mat-button (click)="toggleFilters()" class="filter-toggle">
+        <mat-icon>{{ showFilters ? 'expand_less' : 'tune' }}</mat-icon>
+        {{ showFilters ? 'Ocultar Filtros' : 'Filtros' }}
+      </button>
+    </div>
+
+    <div class="filters-panel" *ngIf="searchQuery && showFilters">
+      <div class="filter-row">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Ordenar por</mat-label>
+          <mat-select [(ngModel)]="sortBy" (selectionChange)="applyFilters()">
+            <mat-option value="date">Data</mat-option>
+            <mat-option value="likes">Likes</mat-option>
+            <mat-option value="length">Duração</mat-option>
+            <mat-option value="title">Título</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Ordem</mat-label>
+          <mat-select [(ngModel)]="sortOrder" (selectionChange)="applyFilters()">
+            <mat-option value="desc">Decrescente</mat-option>
+            <mat-option value="asc">Crescente</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" (click)="applyFilters()">
+          <mat-icon>search</mat-icon>
+          Aplicar Filtros
+        </button>
+        <button mat-button (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Limpar
+        </button>
+      </div>
+    </div>
+
+    <div class="loading-container" *ngIf="isLoading">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div class="videos-grid" *ngIf="!isLoading && videos.length > 0">
+      <app-video-card 
+        *ngFor="let video of videos" 
+        [video]="video">
+      </app-video-card>
+    </div>
+
+    <div class="no-results" *ngIf="!isLoading && videos.length === 0">
+      <mat-icon>video_library</mat-icon>
+      <h3>Nenhum vídeo encontrado</h3>
+      <p *ngIf="searchQuery">Tente buscar por outros termos</p>
+      <p *ngIf="!searchQuery">Seja o primeiro a fazer upload!</p>
+    </div>
+
+    <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+      <button 
+        mat-icon-button 
+        [disabled]="currentPage === 1"
+        (click)="onPageChange(currentPage - 1)">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <button 
+        mat-button 
+        *ngFor="let page of pages"
+        [class.active]="page === currentPage"
+        (click)="onPageChange(page)">
+        {{ page }}
+      </button>
+
+      <button 
+        mat-icon-button 
+        [disabled]="currentPage === totalPages"
+        (click)="onPageChange(currentPage + 1)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

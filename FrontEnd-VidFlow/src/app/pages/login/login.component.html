@@ -1,0 +1,63 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <mat-icon class="logo-icon">video_library</mat-icon>
+      <h1>Entrar no VidFlow</h1>
+      <p>Compartilhe e assista vídeos incríveis</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input 
+          matInput 
+          type="email" 
+          formControlName="email" 
+          placeholder="seu@email.com">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input 
+          matInput 
+          [type]="hidePassword ? 'password' : 'text'" 
+          formControlName="password"
+          placeholder="Digite sua senha">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button 
+          mat-icon-button 
+          matSuffix 
+          type="button"
+          (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.invalid">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="error-message" *ngIf="errorMessage">
+        <mat-icon>error</mat-icon>
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        class="full-width login-button"
+        [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Entrar</span>
+        <mat-spinner diameter="24" *ngIf="isLoading"></mat-spinner>
+      </button>
+    </form>
+
+    <div class="register-link">
+      <p>Não tem uma conta? <a routerLink="/register">Criar conta</a></p>
+    </div>
+  </div>
+</div>

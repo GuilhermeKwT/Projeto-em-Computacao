@@ -1,9 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import * as likeService from "../services/like.services";
+import AppError from "src/lib/AppError";
 
 export const toggleLike = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { videoId } = req.params;
 		const { type } = req.body;
 
@@ -16,7 +20,10 @@ export const toggleLike = async (req: Request, res: Response, next: NextFunction
 
 export const getUserLikeStatus = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { videoId } = req.params;
 
 		const status = await likeService.getUserLikeStatus(videoId, userId);
@@ -39,7 +46,10 @@ export const getVideoLikeCounts = async (req: Request, res: Response, next: Next
 
 export const removeLike = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const userId = req.user!.id;
+		if (!req.user) {
+			throw new AppError("Unauthenticated", 401);
+		}
+		const userId = req.user.id;
 		const { videoId } = req.params;
 
 		const result = await likeService.removeLike(videoId, userId);

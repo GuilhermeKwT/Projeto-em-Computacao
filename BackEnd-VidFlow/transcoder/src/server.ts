@@ -16,9 +16,15 @@ const {
 } = process.env;
 
 if (!S3_ENDPOINT || !S3_ACCESS_KEY || !S3_SECRET_KEY || !S3_UPLOADS_BUCKET || !S3_VIDEOS_BUCKET) {
-	throw new Error("Missing required S3 env variables");
+	throw new Error(
+		"Missing some of required S3 env variables: S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_UPLOADS_BUCKET, S3_VIDEOS_BUCKET",
+	);
 }
 if (!TRANSCODER_SECRET) throw new Error("TRANSCODER_SECRET is required");
+
+if (!API_BASE_URL) {
+	throw new Error("API_BASE_URL is required");
+}
 
 const s3 = new S3Client({
 	region: S3_REGION,
@@ -33,8 +39,10 @@ async function fetchNextJob() {
 		method: "GET",
 		headers: { "X-Transcoder-Secret": TRANSCODER_SECRET! },
 	});
-	if (res.status === 204) return null; // No jobs available
+	if (res.status === 204) return null; // No pending jobs
+
 	if (!res.ok) throw new Error(`Failed to fetch next job: ${res.status}`);
+
 	return res.json();
 }
 
@@ -125,6 +133,16 @@ async function uploadFinal(userId: string, outputPath: string) {
 	return key;
 }
 
+async function cleanupTmp() {
+	const tmpDir = path.join(process.cwd(), "tmp");
+	try {
+		await fs.rm(tmpDir, { recursive: true, force: true });
+		console.log("Cleaned up tmp directory");
+	} catch (err) {
+		console.error("Failed to cleanup tmp directory:", err);
+	}
+}
+
 async function completeJob(key: string, finalKey: string, meta: any) {
 	const body = { key, finalKey, meta };
 	const res = await fetch(`${API_BASE_URL}/videos/jobs/complete`, {
@@ -155,21 +173,13 @@ async function processJob(job: any) {
 		const finalKey = await uploadFinal(job.userId, output);
 		const meta = await probeMeta(output);
 		await completeJob(job.key, finalKey, meta);
-		try {
-			await fs.unlink(input);
-		} catch (err) {
-			console.error(`Failed to delete input file ${input}:`, err);
-		}
-		try {
-			await fs.unlink(output);
-		} catch (err) {
-			console.error(`Failed to delete output file ${output}:`, err);
-		}
 		console.log("Finished job", job.key);
 	} catch (err) {
 		console.error("Job processing error", err);
 		await failJob(job.key, err instanceof Error ? err.message : String(err));
 		throw err;
+	} finally {
+		await cleanupTmp();
 	}
 }
 
@@ -180,15 +190,17 @@ async function loop() {
 			if (job) {
 				await processJob(job);
 			} else {
-				// No jobs available, wait before polling again
-				await new Promise((r) => setTimeout(r, 5000));
+				// Fila vazia, delay de atualização
+				await new Promise((r) => setTimeout(r, 10000));
 			}
 		} catch (err) {
 			console.error("Loop error", err);
-			await new Promise((r) => setTimeout(r, 5000));
+			await new Promise((r) => setTimeout(r, 10000));
 		}
 	}
 }
+
+cleanupTmp();
 
 loop().catch((err) => {
 	console.error("Fatal transcoder error", err);
